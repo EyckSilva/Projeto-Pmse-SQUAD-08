@@ -136,7 +136,7 @@ const Contato = () => {
               
               <div className="mt-6">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.6087654321!2d-37.0789!3d-10.9472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDU2JzUwLjAiUyAzN8KwMDQnNDQuMCJX!5e0!3m2!1spt-BR!2sbr!4v1234567890"
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d19446.3262449603!2d-37.05625625396727!3d-10.900310000000001!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71ab341fe5fff87%3A0x237241f5a2ee6ed3!2sAv.%20Jo%C3%A3o%20Ribeiro%2C%201144%20-%20a%20-%20Santo%20Ant%C3%B4nio%2C%20Aracaju%20-%20SE%2C%2049060-330!5e1!3m2!1spt-BR!2sbr!4v1762124222049!5m2!1spt-BR!2sbr"
                   width="100%"
                   height="250"
                   style={{ border: 0, borderRadius: "0.75rem" }}

@@ -1,37 +1,39 @@
 import Header from "@/components/Header";
 import logoLarge from "@/assets/logo-pmse-large.png";
-import logoSmall from "@/assets/logo-pmse.png";
+import brasaoPMSE from "@/assets/brasao-pmse.png";
+import logoCPMI from "@/assets/logo-cpmi.png";
+import logoCPME from "@/assets/logo-cpme.png";
 
 const units = [
   {
     id: 1,
     name: "QCG",
     fullName: "Quartel do Comando Geral",
-    logo: logoSmall
+    logo: brasaoPMSE
   },
   {
     id: 2,
     name: "Unidades Administrativas",
     fullName: "",
-    logo: logoSmall
+    logo: brasaoPMSE
   },
   {
     id: 3,
     name: "CPMC",
     fullName: "Comando do Policiamento da Capital",
-    logo: logoSmall
+    logo: brasaoPMSE
   },
   {
     id: 4,
     name: "CPMI",
     fullName: "Comando do Policiamento do Interior",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Bras%C3%A3o_de_Sergipe.svg/800px-Bras%C3%A3o_de_Sergipe.svg.png"
+    logo: logoCPMI
   },
   {
     id: 5,
     name: "CPME",
     fullName: "Comando do Policiamento Especializado",
-    logo: "https://images.unsplash.com/photo-1614029655965-2464911905a4?w=400&q=80"
+    logo: logoCPME
   }
 ];
 
