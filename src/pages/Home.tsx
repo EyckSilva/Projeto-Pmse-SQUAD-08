@@ -4,6 +4,12 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import logoLarge from "@/assets/logo-pmse-large.png";
+import corridat from "@/assets/corridat.jpeg";
+import desfile from "@/assets/desfile.avif";
+import natalsolidario from "@/assets/natalsolidario.jpg";
+import diadosoldado from "@/assets/diadosoldado.jpg";
+import festejooperacao from "@/assets/festejooperacao.jpg";
+import maioamarelo from "@/assets/maioamarelo.png";
 
 const mockEvents = [
   {
@@ -11,42 +17,42 @@ const mockEvents = [
     title: "Corrida Tiradentes",
     date: "21/04/2025",
     location: "Aracaju, Orla da Atalaia",
-    image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&q=80"
+    image: corridat
   },
   {
     id: 2,
     title: "Desfile Cívico",
     date: "07/09/2025",
     location: "Avenida Barão de Maruim, Aracaju",
-    image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80"
+    image: desfile
   },
   {
     id: 3,
     title: "Natal Solidário",
     date: "20/12/2025",
     location: "Comunidades de Aracaju",
-    image: "https://images.unsplash.com/photo-1576856497337-52bde8c06ec5?w=800&q=80"
+    image: natalsolidario
   },
   {
     id: 4,
     title: "Dia do Soldado",
     date: "29/08/2026",
     location: "Quartel do Comando Geral",
-    image: "https://images.unsplash.com/photo-1509803874385-db7c23652552?w=800&q=80"
+    image: diadosoldado
   },
   {
     id: 5,
     title: "Operação Festejos Juninos",
     date: "15/06/2026",
     location: "Forró Caju",
-    image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80"
+    image: festejooperacao
   },
   {
     id: 6,
     title: "Campanha do Maio Amarelo",
     date: "05/05/2026",
     location: "Aracaju",
-    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80"
+    image: maioamarelo
   }
 ];
 
