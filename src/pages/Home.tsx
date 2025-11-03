@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
-import { Button } from "@/components/ui/button";
+import EventModal from "@/components/EventModal";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import logoLarge from "@/assets/logo-pmse-large.png";
 import corridat from "@/assets/corridat.jpeg";
 import desfile from "@/assets/desfile.avif";
@@ -11,58 +12,87 @@ import diadosoldado from "@/assets/diadosoldado.jpg";
 import festejooperacao from "@/assets/festejooperacao.jpg";
 import maioamarelo from "@/assets/maioamarelo.png";
 
-const mockEvents = [
+const initialEvents = [
   {
     id: 1,
     title: "Corrida Tiradentes",
     date: "21/04/2025",
     location: "Aracaju, Orla da Atalaia",
-    image: corridat
+    image: corridat,
+    status: "aprovado",
+    participants: [],
+    materials: [],
+    recommendations: []
   },
   {
     id: 2,
     title: "Desfile Cívico",
     date: "07/09/2025",
     location: "Avenida Barão de Maruim, Aracaju",
-    image: desfile
+    image: desfile,
+    status: "aprovado",
+    participants: [],
+    materials: [],
+    recommendations: []
   },
   {
     id: 3,
     title: "Natal Solidário",
     date: "20/12/2025",
     location: "Comunidades de Aracaju",
-    image: natalsolidario
+    image: natalsolidario,
+    status: "pendente",
+    participants: [],
+    materials: [],
+    recommendations: []
   },
   {
     id: 4,
     title: "Dia do Soldado",
     date: "29/08/2026",
     location: "Quartel do Comando Geral",
-    image: diadosoldado
+    image: diadosoldado,
+    status: "aprovado",
+    participants: [],
+    materials: [],
+    recommendations: []
   },
   {
     id: 5,
     title: "Operação Festejos Juninos",
     date: "15/06/2026",
     location: "Forró Caju",
-    image: festejooperacao
+    image: festejooperacao,
+    status: "pendente",
+    participants: [],
+    materials: [],
+    recommendations: []
   },
   {
     id: 6,
     title: "Campanha do Maio Amarelo",
     date: "05/05/2026",
     location: "Aracaju",
-    image: maioamarelo
+    image: maioamarelo,
+    status: "aprovado",
+    participants: [],
+    materials: [],
+    recommendations: []
   }
 ];
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [events, setEvents] = useState(initialEvents);
   
-  const filteredEvents = mockEvents.filter(event =>
+  const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEventCreate = (newEvent: any) => {
+    setEvents(prev => [...prev, newEvent]);
+  };
 
   return (
     <div className="min-h-screen pb-12">
@@ -74,11 +104,7 @@ const Home = () => {
         </div>
         
         <div className="max-w-5xl mx-auto mb-8 flex gap-4">
-          <Button 
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold border-2 border-white/20"
-          >
-            + Cadastrar Novo Evento
-          </Button>
+          <EventModal onEventCreate={handleEventCreate} />
           <Input
             placeholder="Buscar Evento"
             value={searchTerm}

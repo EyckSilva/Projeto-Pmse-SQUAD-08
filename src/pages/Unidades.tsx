@@ -3,6 +3,8 @@ import logoLarge from "@/assets/logo-pmse-large.png";
 import brasaoPMSE from "@/assets/brasao-pmse.png";
 import logoCPMI from "@/assets/logo-cpmi.png";
 import logoCPME from "@/assets/logo-cpme.png";
+import { IoReturnUpBackOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const units = [
   {
@@ -38,6 +40,7 @@ const units = [
 ];
 
 const Unidades = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen pb-12">
       <Header />
@@ -48,10 +51,11 @@ const Unidades = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {units.map((unit) => (
+          {/* Primeira linha: 3 cards */}
+          {units.slice(0, 3).map((unit) => (
             <div 
               key={unit.id}
-              className="bg-card/95 rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-all text-center"
+              className="p-8 text-center"
             >
               <div className="flex justify-center mb-4">
                 <img 
@@ -60,16 +64,43 @@ const Unidades = () => {
                   className="h-24 w-24 object-contain"
                 />
               </div>
-              <h3 className="text-xl font-bold text-card-foreground mb-1">
+              <h3 className="text-xl font-bold text-white mb-1">
                 {unit.name}
               </h3>
               {unit.fullName && (
-                <p className="text-sm text-card-foreground/70">
+                <p className="text-sm text-white">
                   {unit.fullName}
                 </p>
               )}
             </div>
           ))}
+          {/* Última linha: CPMI e CPME lado a lado, esticados */}
+          <div className="col-span-3 flex gap-8 justify-center">
+            {units.slice(3).map((unit) => (
+              <div 
+                key={unit.id}
+                className="flex-1 p-12 text-center flex flex-col items-center"
+              >
+                <div className="flex justify-center mb-6">
+                  <img 
+                    src={unit.logo} 
+                    alt={unit.name}
+                    className="h-32 w-32 object-contain"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {unit.name}
+                </h3>
+                {unit.fullName && (
+                  <p className="text-base text-white">
+                    {unit.fullName}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+          {/* Adiciona um placeholder vazio para centralizar os dois cards da última linha */}
+          <div className="hidden lg:block"></div>
         </div>
       </main>
     </div>

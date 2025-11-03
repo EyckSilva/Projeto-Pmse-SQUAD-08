@@ -1,118 +1,190 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { EventsStore } from "@/lib/eventsStore";
+import { toast } from "sonner";
 import logoLarge from "@/assets/logo-pmse-large.png";
-
-const mockReports = [
-  {
-    id: 1,
-    type: "Relatório de Op.",
-    title: "Forró Caju",
-    date: "15/06/2026",
-    responsible: "Cap. Silva",
-    status: "Aprovado"
-  },
-  {
-    id: 2,
-    type: "Relatório de Evento",
-    title: "Corrida Tiradentes",
-    date: "21/04/2025",
-    responsible: "Ten. Souza",
-    status: "Pendente"
-  }
-];
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FaTrash } from "react-icons/fa";
+import { IoReturnUpBackOutline } from "react-icons/io5";
 
 const Relatorio = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  
-  const filteredReports = mockReports.filter(report =>
-    report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [reports, setReports] = useState([
+    {
+      id: 1,
+      title: "Relatório de Operação - Forró Caju",
+      date: "15/06/2026",
+      responsible: "Cap. Silva",
+      status: "aprovado"
+    },
+    {
+      id: 2,
+      title: "Relatório de Evento - Corrida Tiradentes",
+      date: "21/04/2025",
+      responsible: "Ten. Souza",
+      status: "pendente"
+    }
+  ]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newReport, setNewReport] = useState({
+    title: "",
+    date: "",
+    responsible: "",
+    status: "pendente"
+  });
+
+  const handleCreateReport = () => {
+    setReports([...reports, { ...newReport, id: Date.now() }]);
+    setIsDialogOpen(false);
+    setNewReport({ title: "", date: "", responsible: "", status: "pendente" });
+    toast.success("Relatório criado com sucesso!");
+  };
 
   return (
     <div className="min-h-screen pb-12">
       <Header />
-      
-      <main className="container mx-auto px-4 pt-32">
+      <main className="container mx-auto px-4 pt-24">
         <div className="flex justify-center mb-8">
-          <img src={logoLarge} alt="PMSE" className="h-24" />
-        </div>
-        
-        <h1 className="text-4xl font-bold text-center text-foreground mb-8">
-          Relatórios Operacionais
-        </h1>
-        
-        <div className="max-w-5xl mx-auto mb-8 flex gap-4">
-          <Button 
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold border-2 border-white/20"
-          >
-            + Gerar Relatório
-          </Button>
-          <Input
-            placeholder="Buscar Relatório"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-accent/30 border-border text-foreground placeholder:text-muted-foreground"
-          />
-        </div>
-        
-        <p className="text-center text-foreground/80 mb-8 max-w-3xl mx-auto">
-          Selecione um relatório para visualizar ou clique em <strong>Gerar Relatório</strong> para cadastrar um novo.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {filteredReports.map((report) => (
-            <div 
-              key={report.id}
-              className="bg-card/95 rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-all"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="text-xl font-bold text-card-foreground">
-                  {report.type} - {report.title}
-                </h3>
-                <Badge 
-                  className={report.status === "Aprovado" 
-                    ? "bg-[hsl(142,76%,36%)] text-white" 
-                    : "bg-[hsl(45,93%,47%)] text-black"}
-                >
-                  {report.status}
-                </Badge>
-              </div>
-              
-              <div className="space-y-1 mb-4">
-                <p className="text-sm text-card-foreground/70">
-                  Data: {report.date}
-                </p>
-                <p className="text-sm text-card-foreground/70">
-                  Responsável: {report.responsible}
-                </p>
-              </div>
-              
-              <div className="flex gap-3">
-                <Button 
-                  variant="secondary"
-                  className="flex-1 bg-muted hover:bg-muted/90 text-foreground font-semibold"
-                >
-                  Visualizar
-                </Button>
-                <Button 
-                  variant="secondary"
-                  className="flex-1 bg-muted hover:bg-muted/90 text-foreground font-semibold"
-                >
-                  Baixar
-                </Button>
-              </div>
-            </div>
-          ))}
-          
-          <div className="bg-card/50 rounded-2xl p-6 flex items-center justify-center min-h-[200px] border-2 border-dashed border-border">
-            <p className="text-card-foreground/60 italic">
-              Nenhum outro relatório cadastrado.
-            </p>
+            <img src={logoLarge} alt="PMSE" className="h-32" />
           </div>
+          <h1 className="text-4xl font-bold text-center text-foreground mb-8">
+            Relatórios Operacionais
+          </h1>
+          <div className="max-w-5xl mx-auto mb-8 flex gap-4">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-accent/30 border border-border text-white font-semibold px-4 py-2 rounded h-12">+ Gerar Relatório</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Gerar Novo Relatório</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-4 mt-4">
+                  <Input
+                    placeholder="Título do Relatório"
+                    value={newReport.title}
+                    onChange={e => setNewReport({ ...newReport, title: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Data"
+                    type="date"
+                    value={newReport.date}
+                    onChange={e => setNewReport({ ...newReport, date: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Responsável"
+                    value={newReport.responsible}
+                    onChange={e => setNewReport({ ...newReport, responsible: e.target.value })}
+                  />
+                  <div className="flex gap-2">
+                    <Button className="bg-primary text-white" onClick={handleCreateReport}>Criar</Button>
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Input
+              placeholder="Buscar Relatório"
+              className="bg-accent/30 border-border text-white placeholder:text-muted-foreground h-12 px-4 rounded w-full"
+            />
+          </div>
+          <p className="text-center text-muted-foreground mb-8">
+            Selecione um relatório para visualizar ou clique em Gerar Relatório para cadastrar um novo.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {reports.map(report => (
+              <div key={report.id} className="bg-card rounded-2xl p-8 shadow mb-4 flex flex-col gap-4 relative">
+                <button
+                  className="absolute top-4 right-4 text-xl"
+                  style={{ color: '#041F3A' }}
+                  title="Remover relatório"
+                  onClick={() => {
+                    setReports(reports.filter(r => r.id !== report.id));
+                    toast.success("Relatório removido!");
+                  }}
+                >
+                  <FaTrash size={18} />
+                </button>
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-xl font-bold text-card-foreground">{report.title}</h2>
+                  <div className="relative flex items-center gap-2">
+                    <Badge className={report.status === "aprovado" ? "bg-green-600 text-white" : "bg-yellow-600 text-white"}>
+                      <span className={report.status === "aprovado" ? "text-white" : "text-white"}>
+                        {report.status === "aprovado" ? "Aprovado" : "Pendente"}
+                      </span>
+                    </Badge>
+                    <button
+                      className="ml-2 text-card-foreground hover:text-primary focus:outline-none"
+                      onClick={() => setReports(reports.map(r => r.id === report.id ? { ...r, showStatusMenu: !r.showStatusMenu } : { ...r, showStatusMenu: false }))}
+                      title="Alterar status"
+                    >
+                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M5.25 7.5L10 12.25L14.75 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </button>
+                    {report.showStatusMenu && (
+                      <div className="absolute right-0 top-8 bg-white border border-[#041F3A] rounded shadow z-10 min-w-[80px] p-0 flex flex-col items-center">
+                        {report.status === "aprovado" ? (
+                          <button
+                            className="w-full px-2 py-1 text-left text-yellow-600 font-semibold text-sm hover:bg-muted/30 rounded"
+                            onClick={() => {
+                              setReports(reports.map(r => r.id === report.id ? { ...r, status: "pendente", showStatusMenu: false } : r));
+                              toast.success("Relatório marcado como pendente!");
+                            }}
+                          >Pendente</button>
+                        ) : (
+                          <button
+                            className="w-full px-2 py-1 text-left text-green-600 font-semibold text-sm hover:bg-muted/30 rounded"
+                            onClick={() => {
+                              setReports(reports.map(r => r.id === report.id ? { ...r, status: "aprovado", showStatusMenu: false } : r));
+                              toast.success("Relatório marcado como aprovado!");
+                            }}
+                          >Aprovado</button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="text-sm text-card-foreground/80 mb-2">Data: {report.date}</div>
+                <div className="text-sm text-card-foreground/80 mb-4">Responsável: {report.responsible}</div>
+                {/* Status dropdown substitui os botões Aprovar/Pendente */}
+                <div className="flex gap-4">
+                  <Button
+                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded"
+                    onClick={() => {
+                      if (report.id === 1) {
+                        window.open('/Relatório de Op. - Forró Caju-.pdf', '_blank');
+                      } else if (report.id === 2) {
+                        window.open('/Relatório de Evento - CORRIDA TIRADENTES.pdf', '_blank');
+                      }
+                    }}
+                  >Visualizar</Button>
+                  <Button
+                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded"
+                    onClick={() => {
+                      if (report.id === 1) {
+                        const link = document.createElement('a');
+                        link.href = '/Relatório de Op. - Forró Caju-.pdf';
+                        link.download = 'Relatório de Op. - Forró Caju-.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      } else if (report.id === 2) {
+                        const link = document.createElement('a');
+                        link.href = '/Relatório de Evento - CORRIDA TIRADENTES.pdf';
+                        link.download = 'Relatório de Evento - CORRIDA TIRADENTES.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }
+                    }}
+                  >Baixar</Button>
+                </div>
+              </div>
+            ))}
+            <div className="bg-muted/30 rounded-2xl p-8 flex items-center justify-center text-muted-foreground text-lg italic min-h-[180px]">
+              Nenhum outro relatório cadastrado.
+            </div>
         </div>
       </main>
     </div>

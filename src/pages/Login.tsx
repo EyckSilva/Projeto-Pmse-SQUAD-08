@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import logoLarge from "@/assets/logo-pmse-large.png";
+import logoSmall from "@/assets/logo-pmse.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -26,7 +26,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
-          <img src={logoLarge} alt="PMSE" className="h-32" />
+          <img src={logoSmall} alt="PMSE" className="h-26" />
         </div>
         
         <div className="bg-card rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.35)] p-8">
@@ -69,6 +69,20 @@ const Login = () => {
             >
               Entrar
             </Button>
+            
+            <div className="text-center mt-4 space-y-2">
+              <p className="text-sm text-card-foreground/70">
+                Não tem uma conta?{" "}
+                <Link to="/cadastro" className="text-primary hover:underline">
+                  Cadastre-se
+                </Link>
+              </p>
+              <p className="text-sm text-card-foreground/70">
+                <Link to="/redefinir-senha" className="text-primary hover:underline">
+                  Esqueceu sua senha?
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>
