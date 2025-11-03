@@ -58,14 +58,31 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [event, setEvent] = useState<any>(null);
+  const [imageError, setImageError] = useState(false);
   const [newParticipant, setNewParticipant] = useState("");
   const [newMaterial, setNewMaterial] = useState("");
   const [newRecommendation, setNewRecommendation] = useState("");
 
+  // Função para obter a imagem correta
+  const getEventImage = (eventData: any) => {
+    if (imageError) {
+      return mockEventDetails[id]?.image || natalsolidario; // fallback
+    }
+    return eventData.image || mockEventDetails[id]?.image || natalsolidario;
+  };
+
   useEffect(() => {
     if (id) {
       const eventData = EventsStore.getById(id);
-      setEvent(eventData);
+      if (eventData) {
+        setEvent(eventData);
+      } else {
+        // Fallback para eventos mock se não encontrar no store
+        const mockEvent = mockEventDetails[id];
+        if (mockEvent) {
+          setEvent(mockEvent);
+        }
+      }
     }
   }, [id]);
 
@@ -146,9 +163,11 @@ const EventDetails = () => {
       <main className="container mx-auto px-4 pt-24">
         <div className="max-w-6xl mx-auto">
           <img 
-            src={event.image} 
+            src={getEventImage(event)} 
             alt={event.title}
             className="w-full max-w-3xl mx-auto h-80 object-cover rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.35)] mb-8"
+            onError={() => setImageError(true)}
+            onLoad={() => setImageError(false)}
           />
           
           <div className="text-center mb-12">

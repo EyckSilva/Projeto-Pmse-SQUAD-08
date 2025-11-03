@@ -1,3 +1,11 @@
+// Imports das imagens
+import corridat from "@/assets/corridat.jpeg";
+import desfile from "@/assets/desfile.avif";
+import natalsolidario from "@/assets/natalsolidario.jpg";
+import diadosoldado from "@/assets/diadosoldado.jpg";
+import festejooperacao from "@/assets/festejooperacao.jpg";
+import maioamarelo from "@/assets/maioamarelo.png";
+
 // Simulação de um store simples para gerenciar os eventos
 let eventsStore: any[] = [
   {
@@ -5,7 +13,7 @@ let eventsStore: any[] = [
     title: "Corrida Tiradentes",
     date: "21/04/2025",
     location: "Aracaju, Orla da Atalaia",
-    image: "/src/assets/corridat.jpeg",
+    image: corridat,
     status: "aprovado",
     participants: [],
     materials: [],
@@ -16,7 +24,7 @@ let eventsStore: any[] = [
     title: "Desfile Cívico",
     date: "07/09/2025",
     location: "Avenida Barão de Maruim, Aracaju",
-    image: "/src/assets/desfile.avif",
+    image: desfile,
     status: "aprovado",
     participants: [],
     materials: [],
@@ -27,7 +35,7 @@ let eventsStore: any[] = [
     title: "Natal Solidário",
     date: "20/12/2025",
     location: "Comunidades de Aracaju",
-    image: "/src/assets/natalsolidario.jpg",
+    image: natalsolidario,
     status: "pendente",
     participants: [],
     materials: [],
@@ -38,7 +46,7 @@ let eventsStore: any[] = [
     title: "Dia do Soldado",
     date: "29/08/2026",
     location: "Quartel do Comando Geral",
-    image: "/src/assets/diadosoldado.jpg",
+    image: diadosoldado,
     status: "aprovado",
     participants: [],
     materials: [],
@@ -49,7 +57,7 @@ let eventsStore: any[] = [
     title: "Operação Festejos Juninos",
     date: "15/06/2026",
     location: "Forró Caju",
-    image: "/src/assets/festejooperacao.jpg",
+    image: festejooperacao,
     status: "pendente",
     participants: [],
     materials: [],
@@ -60,7 +68,7 @@ let eventsStore: any[] = [
     title: "Campanha do Maio Amarelo",
     date: "05/05/2026",
     location: "Aracaju",
-    image: "/src/assets/maioamarelo.png",
+    image: maioamarelo,
     status: "aprovado",
     participants: [],
     materials: [],
