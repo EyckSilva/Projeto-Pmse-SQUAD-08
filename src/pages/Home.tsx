@@ -98,22 +98,22 @@ const Home = () => {
     <div className="min-h-screen pb-12">
       <Header />
       
-      <main className="container mx-auto px-4 pt-32">
-        <div className="flex justify-center mb-12">
-          <img src={logoLarge} alt="PMSE" className="h-32" />
+      <main className="container mx-auto px-4 pt-24 sm:pt-32">
+        <div className="flex justify-center mb-8 sm:mb-12">
+          <img src={logoLarge} alt="PMSE" className="h-24 sm:h-32" />
         </div>
         
-        <div className="max-w-5xl mx-auto mb-8 flex gap-4">
+        <div className="max-w-5xl mx-auto mb-6 sm:mb-8 flex flex-col sm:flex-row gap-4">
           <EventModal onEventCreate={handleEventCreate} />
           <Input
             placeholder="Buscar Evento"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-accent/30 border-border text-foreground placeholder:text-muted-foreground"
+            className="bg-accent/30 border-border text-foreground placeholder:text-muted-foreground h-12"
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
           {filteredEvents.map((event) => (
             <div 
               key={event.id} 
@@ -122,19 +122,19 @@ const Home = () => {
               <img 
                 src={event.image} 
                 alt={event.title}
-                className="w-full h-48 object-cover"
+                className="w-full h-40 sm:h-48 object-cover"
               />
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-card-foreground mb-2">
+              <div className="p-4 sm:p-5">
+                <h3 className="text-lg sm:text-xl font-bold text-card-foreground mb-2">
                   {event.title}
                 </h3>
-                <p className="text-sm text-card-foreground/70 mb-4">
+                <p className="text-xs sm:text-sm text-card-foreground/70 mb-4">
                   {event.date} – {event.location}
                 </p>
                 <Link to={`/evento/${event.id}`}>
                   <Button 
                     variant="secondary"
-                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold"
+                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold text-sm sm:text-base h-10 sm:h-auto"
                   >
                     MAIS DETALHES
                   </Button>

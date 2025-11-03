@@ -73,14 +73,15 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold border-2 border-white/20"
+          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold border-2 border-white/20 text-sm sm:text-base h-10 sm:h-12"
         >
-          + Cadastrar Novo Evento
+          <span className="hidden sm:inline">+ Cadastrar Novo Evento</span>
+          <span className="sm:hidden">+ Novo Evento</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4 w-[calc(100vw-2rem)] sm:w-full">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
             Cadastrar Novo Evento
           </DialogTitle>
         </DialogHeader>
@@ -88,7 +89,7 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-foreground">
+              <Label htmlFor="title" className="text-foreground text-sm sm:text-base">
                 Título do Evento *
               </Label>
               <Input
@@ -97,12 +98,12 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
                 placeholder="Ex: Corrida Tiradentes"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                className="bg-background border-input text-foreground"
+                className="bg-background border-input text-foreground text-sm sm:text-base"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="date" className="text-foreground">
+              <Label htmlFor="date" className="text-foreground text-sm sm:text-base">
                 Data do Evento *
               </Label>
               <Input
@@ -110,12 +111,12 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleInputChange("date", e.target.value)}
-                className="bg-background border-input text-foreground"
+                className="bg-background border-input text-foreground text-sm sm:text-base"
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="location" className="text-foreground">
+              <Label htmlFor="location" className="text-foreground text-sm sm:text-base">
                 Local do Evento *
               </Label>
               <Input
@@ -124,12 +125,12 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
                 placeholder="Ex: Aracaju, Orla da Atalaia"
                 value={formData.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
-                className="bg-background border-input text-foreground"
+                className="bg-background border-input text-foreground text-sm sm:text-base"
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="description" className="text-foreground">
+              <Label htmlFor="description" className="text-foreground text-sm sm:text-base">
                 Descrição do Evento
               </Label>
               <Textarea
@@ -137,12 +138,12 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
                 placeholder="Descreva os detalhes do evento..."
                 value={formData.description}
                 onChange={(e) => handleInputChange("description", e.target.value)}
-                className="bg-background border-input text-foreground min-h-[100px]"
+                className="bg-background border-input text-foreground min-h-[80px] sm:min-h-[100px] text-sm sm:text-base"
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="image" className="text-foreground">
+              <Label htmlFor="image" className="text-foreground text-sm sm:text-base">
                 Imagem do Evento
               </Label>
               <Input
@@ -150,7 +151,7 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="bg-background border-input text-foreground"
+                className="bg-background border-input text-foreground text-sm sm:text-base"
               />
               <p className="text-xs text-muted-foreground">
                 Formatos aceitos: JPG, PNG, GIF (máximo 5MB)
@@ -158,18 +159,18 @@ const EventModal = ({ onEventCreate }: EventModalProps) => {
             </div>
           </div>
           
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
             <Button 
               type="button"
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="flex-1"
+              className="flex-1 text-sm sm:text-base h-10 sm:h-auto"
             >
               Cancelar
             </Button>
             <Button 
               type="submit" 
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm sm:text-base h-10 sm:h-auto"
             >
               Cadastrar Evento
             </Button>

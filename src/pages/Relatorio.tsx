@@ -79,42 +79,45 @@ const Relatorio = () => {
   return (
     <div className="min-h-screen pb-12">
       <Header />
-      <main className="container mx-auto px-4 pt-24">
-        <div className="flex justify-center mb-8">
-            <img src={logoLarge} alt="PMSE" className="h-32" />
+      <main className="container mx-auto px-4 pt-24 sm:pt-28">
+        <div className="flex justify-center mb-6 sm:mb-8">
+            <img src={logoLarge} alt="PMSE" className="h-24 sm:h-32" />
           </div>
-          <h1 className="text-4xl font-bold text-center text-foreground mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-foreground mb-6 sm:mb-8 px-4">
             Relatórios Operacionais
           </h1>
-          <div className="max-w-5xl mx-auto mb-8 flex gap-4">
+          <div className="max-w-5xl mx-auto mb-6 sm:mb-8 flex flex-col sm:flex-row gap-4">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-accent/30 border border-border text-white font-semibold px-4 py-2 rounded h-12">+ Gerar Relatório</Button>
+                <Button className="bg-accent/30 border border-border text-white font-semibold px-4 py-2 rounded h-12 text-sm sm:text-base">+ Gerar Relatório</Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-md mx-4">
                 <DialogHeader>
-                  <DialogTitle>Gerar Novo Relatório</DialogTitle>
+                  <DialogTitle className="text-lg sm:text-xl">Gerar Novo Relatório</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 mt-4">
                   <Input
                     placeholder="Título do Relatório"
                     value={newReport.title}
                     onChange={e => setNewReport({ ...newReport, title: e.target.value })}
+                    className="text-sm sm:text-base"
                   />
                   <Input
                     placeholder="Data"
                     type="date"
                     value={newReport.date}
                     onChange={e => setNewReport({ ...newReport, date: e.target.value })}
+                    className="text-sm sm:text-base"
                   />
                   <Input
                     placeholder="Responsável"
                     value={newReport.responsible}
                     onChange={e => setNewReport({ ...newReport, responsible: e.target.value })}
+                    className="text-sm sm:text-base"
                   />
-                  <div className="flex gap-2">
-                    <Button className="bg-primary text-white" onClick={handleCreateReport}>Criar</Button>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button className="bg-primary text-white text-sm sm:text-base" onClick={handleCreateReport}>Criar</Button>
+                    <Button variant="outline" className="text-sm sm:text-base" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
                   </div>
                 </div>
               </DialogContent>
@@ -124,14 +127,14 @@ const Relatorio = () => {
               className="bg-accent/30 border-border text-white placeholder:text-muted-foreground h-12 px-4 rounded w-full"
             />
           </div>
-          <p className="text-center text-muted-foreground mb-8">
+          <p className="text-center text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base px-4">
             Selecione um relatório para visualizar ou clique em Gerar Relatório para cadastrar um novo.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
             {reports.map(report => (
-              <div key={report.id} className="bg-card rounded-2xl p-8 shadow mb-4 flex flex-col gap-4 relative">
+              <div key={report.id} className="bg-card rounded-2xl p-4 sm:p-6 lg:p-8 shadow mb-4 flex flex-col gap-4 relative">
                 <button
-                  className="absolute top-4 right-4 text-xl"
+                  className="absolute top-3 right-3 sm:top-4 sm:right-4 text-lg sm:text-xl"
                   style={{ color: '#041F3A' }}
                   title="Remover relatório"
                   onClick={() => {
@@ -139,10 +142,10 @@ const Relatorio = () => {
                     toast.success("Relatório removido!");
                   }}
                 >
-                  <FaTrash size={18} />
+                  <FaTrash size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </button>
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-xl font-bold text-card-foreground">{report.title}</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                  <h2 className="text-lg sm:text-xl font-bold text-card-foreground pr-8 sm:pr-0">{report.title}</h2>
                   <div className="relative flex items-center gap-2">
                     <Badge className={report.status === "aprovado" ? "bg-green-600 text-white" : "bg-yellow-600 text-white"}>
                       <span className={report.status === "aprovado" ? "text-white" : "text-white"}>
@@ -179,12 +182,12 @@ const Relatorio = () => {
                     )}
                   </div>
                 </div>
-                <div className="text-sm text-card-foreground/80 mb-2">Data: {report.date}</div>
-                <div className="text-sm text-card-foreground/80 mb-4">Responsável: {report.responsible}</div>
+                <div className="text-xs sm:text-sm text-card-foreground/80 mb-2">Data: {report.date}</div>
+                <div className="text-xs sm:text-sm text-card-foreground/80 mb-4">Responsável: {report.responsible}</div>
                 {/* Status dropdown substitui os botões Aprovar/Pendente */}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <Button
-                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded"
+                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded text-sm sm:text-base h-10 sm:h-auto"
                     onClick={async () => {
                       try {
                         const pdfInfo = getPdfInfo(report.id);
@@ -210,7 +213,7 @@ const Relatorio = () => {
                     }}
                   >Visualizar</Button>
                   <Button
-                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded"
+                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded text-sm sm:text-base h-10 sm:h-auto"
                     onClick={async () => {
                       try {
                         const pdfInfo = getPdfInfo(report.id);
@@ -251,7 +254,7 @@ const Relatorio = () => {
                 </div>
               </div>
             ))}
-            <div className="bg-muted/30 rounded-2xl p-8 flex items-center justify-center text-muted-foreground text-lg italic min-h-[180px]">
+            <div className="bg-muted/30 rounded-2xl p-6 sm:p-8 flex items-center justify-center text-muted-foreground text-base sm:text-lg italic min-h-[160px] sm:min-h-[180px]">
               Nenhum outro relatório cadastrado.
             </div>
         </div>

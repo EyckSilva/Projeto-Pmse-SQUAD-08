@@ -83,3 +83,30 @@ All colors MUST be HSL.
     min-height: 100vh;
   }
 }
+
+@layer utilities {
+  /* Utilities responsivas personalizadas */
+  .touch-friendly {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .mobile-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  .responsive-text {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  .responsive-heading {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .mobile-menu-overlay {
+    @apply fixed inset-0 bg-black/50 z-40 lg:hidden;
+  }
+  
+  .safe-area-padding {
+    @apply pb-safe-area-inset-bottom pt-safe-area-inset-top;
+  }
+}

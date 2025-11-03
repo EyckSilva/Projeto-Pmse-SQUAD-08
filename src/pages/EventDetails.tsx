@@ -154,150 +154,153 @@ const EventDetails = () => {
     <div className="min-h-screen pb-12">
       <Header />
       <button
-        className="mb-6 flex items-center gap-2 text-white font-semibold px-4 py-2 rounded ml-4 mt-4 bg-transparent border-none shadow-none"
+        className="mb-4 sm:mb-6 flex items-center gap-2 text-white font-semibold px-4 py-2 rounded ml-4 mt-4 bg-transparent border-none shadow-none"
         onClick={() => navigate(-1)}
       >
-        <IoReturnUpBackOutline size={22} />
+        <IoReturnUpBackOutline size={20} className="sm:w-[22px] sm:h-[22px]" />
         <span className="hidden sm:inline">Voltar</span>
       </button>
-      <main className="container mx-auto px-4 pt-24">
+      <main className="container mx-auto px-4 pt-20 sm:pt-24">
         <div className="max-w-6xl mx-auto">
           <img 
             src={getEventImage(event)} 
             alt={event.title}
-            className="w-full max-w-3xl mx-auto h-80 object-cover rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.35)] mb-8"
+            className="w-full max-w-3xl mx-auto h-48 sm:h-64 lg:h-80 object-cover rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.35)] mb-6 sm:mb-8"
             onError={() => setImageError(true)}
             onLoad={() => setImageError(false)}
           />
           
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <h1 className="text-4xl font-bold text-foreground">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-2 sm:gap-4 mb-4">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
                 {event.title}
               </h1>
-              <Badge 
-                variant={event.status === 'aprovado' ? 'default' : 'secondary'}
-                className={`text-sm font-semibold ${
-                  event.status === 'aprovado' 
-                    ? 'bg-green-600 text-white' 
-                    : 'bg-yellow-600 text-white'
-                }`}
-              >
-                {event.status?.toUpperCase()}
-              </Badge>
-              <Button
-                className="flex items-center gap-2 text-white font-semibold px-4 py-2 rounded ml-2 bg-transparent border-none shadow-none"
-                onClick={handleRemoveEvent}
-              >
-                Remover Evento
-                <FaTrash color="#fff" />
-              </Button>
+              <div className="flex items-center justify-center gap-2 sm:gap-4">
+                <Badge 
+                  variant={event.status === 'aprovado' ? 'default' : 'secondary'}
+                  className={`text-xs sm:text-sm font-semibold ${
+                    event.status === 'aprovado' 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-yellow-600 text-white'
+                  }`}
+                >
+                  {event.status?.toUpperCase()}
+                </Badge>
+                <Button
+                  className="flex items-center gap-2 text-white font-semibold px-3 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm bg-transparent border-none shadow-none"
+                  onClick={handleRemoveEvent}
+                >
+                  <span className="hidden sm:inline">Remover Evento</span>
+                  <span className="sm:hidden">Remover</span>
+                  <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
+                </Button>
+              </div>
             </div>
-            <p className="text-lg text-foreground/80">
+            <p className="text-base sm:text-lg text-foreground/80 px-4">
               {event.date} – {event.location}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-card rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <h2 className="text-xl font-bold text-card-foreground mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+              <h2 className="text-lg sm:text-xl font-bold text-card-foreground mb-4">
                 PARTICIPANTES
               </h2>
               <div className="space-y-2 mb-4">
                 {event.participants?.map((participant: string, index: number) => (
-                  <div key={index} className="p-2 bg-muted rounded text-sm flex items-center justify-between">
+                  <div key={index} className="p-2 bg-muted rounded text-xs sm:text-sm flex items-center justify-between">
                     <span>{participant}</span>
                     <button
-                      className="ml-2 text-lg"
+                      className="ml-2 text-base sm:text-lg"
                       title="Remover"
                       onClick={() => handleRemoveParticipant(index)}
                     >
-                      <FaTrash color="#fff" />
+                      <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
                     </button>
                   </div>
                 ))}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="Adicionar participante"
                   value={newParticipant}
                   onChange={(e) => setNewParticipant(e.target.value)}
-                  className="bg-muted border-0 text-foreground"
+                  className="bg-muted border-0 text-foreground text-xs sm:text-sm"
                   onKeyPress={(e) => e.key === 'Enter' && handleAddParticipant()}
                 />
                 <Button 
                   onClick={handleAddParticipant}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap text-xs sm:text-sm h-9 sm:h-10"
                 >
                   + Adicionar
                 </Button>
               </div>
             </div>
 
-            <div className="bg-card rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <h2 className="text-xl font-bold text-card-foreground mb-4">
+            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+              <h2 className="text-lg sm:text-xl font-bold text-card-foreground mb-4">
                 MATERIAIS
               </h2>
               <div className="space-y-2 mb-4">
                 {event.materials?.map((material: string, index: number) => (
-                  <div key={index} className="p-2 bg-muted rounded text-sm flex items-center justify-between">
+                  <div key={index} className="p-2 bg-muted rounded text-xs sm:text-sm flex items-center justify-between">
                     <span>{material}</span>
                     <button
-                      className="ml-2 text-lg"
+                      className="ml-2 text-base sm:text-lg"
                       title="Remover"
                       onClick={() => handleRemoveMaterial(index)}
                     >
-                      <FaTrash color="#fff" />
+                      <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
                     </button>
                   </div>
                 ))}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="Adicionar material"
                   value={newMaterial}
                   onChange={(e) => setNewMaterial(e.target.value)}
-                  className="bg-muted border-0 text-foreground"
+                  className="bg-muted border-0 text-foreground text-xs sm:text-sm"
                   onKeyPress={(e) => e.key === 'Enter' && handleAddMaterial()}
                 />
                 <Button 
                   onClick={handleAddMaterial}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap text-xs sm:text-sm h-9 sm:h-10"
                 >
                   + Adicionar
                 </Button>
               </div>
             </div>
 
-            <div className="bg-card rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <h2 className="text-xl font-bold text-card-foreground mb-4">
+            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+              <h2 className="text-lg sm:text-xl font-bold text-card-foreground mb-4">
                 RECOMENDAÇÕES
               </h2>
               <div className="space-y-2 mb-4">
                 {event.recommendations?.map((recommendation: string, index: number) => (
-                  <div key={index} className="p-2 bg-muted rounded text-sm flex items-center justify-between">
+                  <div key={index} className="p-2 bg-muted rounded text-xs sm:text-sm flex items-center justify-between">
                     <span>{recommendation}</span>
                     <button
-                      className="ml-2 text-lg"
+                      className="ml-2 text-base sm:text-lg"
                       title="Remover"
                       onClick={() => handleRemoveRecommendation(index)}
                     >
-                      <FaTrash color="#fff" />
+                      <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
                     </button>
                   </div>
                 ))}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="Adicionar recomendação"
                   value={newRecommendation}
                   onChange={(e) => setNewRecommendation(e.target.value)}
-                  className="bg-muted border-0 text-foreground"
+                  className="bg-muted border-0 text-foreground text-xs sm:text-sm"
                   onKeyPress={(e) => e.key === 'Enter' && handleAddRecommendation()}
                 />
                 <Button 
                   onClick={handleAddRecommendation}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap text-xs sm:text-sm h-9 sm:h-10"
                 >
                   + Adicionar
                 </Button>
