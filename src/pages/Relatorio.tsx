@@ -10,6 +10,38 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { FaTrash } from "react-icons/fa";
 import { IoReturnUpBackOutline } from "react-icons/io5";
 
+// Função auxiliar para obter URLs dos PDFs
+const getPdfInfo = (reportId: number) => {
+  const baseUrl = window.location.origin;
+  
+  switch (reportId) {
+    case 1:
+      return {
+        url: `${baseUrl}/relatorio-forro-caju.pdf`,
+        fileName: 'Relatório de Op. - Forró Caju.pdf',
+        fallbackUrl: `/relatorio-forro-caju.pdf`
+      };
+    case 2:
+      return {
+        url: `${baseUrl}/relatorio-corrida-tiradentes.pdf`,
+        fileName: 'Relatório de Evento – CORRIDA TIRADENTES.pdf',
+        fallbackUrl: `/relatorio-corrida-tiradentes.pdf`
+      };
+    default:
+      return null;
+  }
+};
+
+// Função para verificar se um arquivo existe
+const checkFileExists = async (url: string): Promise<boolean> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch {
+    return false;
+  }
+};
+
 const Relatorio = () => {
   const [reports, setReports] = useState([
     {
@@ -17,14 +49,16 @@ const Relatorio = () => {
       title: "Relatório de Operação - Forró Caju",
       date: "15/06/2026",
       responsible: "Cap. Silva",
-      status: "aprovado"
+      status: "aprovado",
+      showStatusMenu: false
     },
     {
       id: 2,
       title: "Relatório de Evento - Corrida Tiradentes",
       date: "21/04/2025",
       responsible: "Ten. Souza",
-      status: "pendente"
+      status: "pendente",
+      showStatusMenu: false
     }
   ]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,7 +70,7 @@ const Relatorio = () => {
   });
 
   const handleCreateReport = () => {
-    setReports([...reports, { ...newReport, id: Date.now() }]);
+    setReports([...reports, { ...newReport, id: Date.now(), showStatusMenu: false }]);
     setIsDialogOpen(false);
     setNewReport({ title: "", date: "", responsible: "", status: "pendente" });
     toast.success("Relatório criado com sucesso!");
@@ -151,31 +185,66 @@ const Relatorio = () => {
                 <div className="flex gap-4">
                   <Button
                     className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded"
-                    onClick={() => {
-                      if (report.id === 1) {
-                        window.open('/Relatório de Op. - Forró Caju-.pdf', '_blank');
-                      } else if (report.id === 2) {
-                        window.open('/Relatório de Evento - CORRIDA TIRADENTES.pdf', '_blank');
+                    onClick={async () => {
+                      try {
+                        const pdfInfo = getPdfInfo(report.id);
+                        if (!pdfInfo) {
+                          toast.error("Arquivo não disponível!");
+                          return;
+                        }
+
+                        // Tenta a URL principal primeiro
+                        let urlToUse = pdfInfo.url;
+                        const fileExists = await checkFileExists(pdfInfo.url);
+                        
+                        if (!fileExists) {
+                          // Se não encontrou, tenta a URL de fallback
+                          urlToUse = pdfInfo.fallbackUrl;
+                        }
+
+                        window.open(urlToUse, '_blank');
+                      } catch (error) {
+                        console.error('Erro ao abrir PDF:', error);
+                        toast.error("Erro ao abrir o arquivo!");
                       }
                     }}
                   >Visualizar</Button>
                   <Button
                     className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded"
-                    onClick={() => {
-                      if (report.id === 1) {
+                    onClick={async () => {
+                      try {
+                        const pdfInfo = getPdfInfo(report.id);
+                        if (!pdfInfo) {
+                          toast.error("Arquivo não disponível!");
+                          return;
+                        }
+
+                        // Tenta a URL principal primeiro
+                        let urlToUse = pdfInfo.url;
+                        const fileExists = await checkFileExists(pdfInfo.url);
+                        
+                        if (!fileExists) {
+                          // Se não encontrou, tenta a URL de fallback
+                          urlToUse = pdfInfo.fallbackUrl;
+                        }
+
+                        const response = await fetch(urlToUse);
+                        if (!response.ok) {
+                          throw new Error('Arquivo não encontrado');
+                        }
+
+                        const blob = await response.blob();
                         const link = document.createElement('a');
-                        link.href = '/Relatório de Op. - Forró Caju-.pdf';
-                        link.download = 'Relatório de Op. - Forró Caju-.pdf';
+                        link.href = URL.createObjectURL(blob);
+                        link.download = pdfInfo.fileName;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
-                      } else if (report.id === 2) {
-                        const link = document.createElement('a');
-                        link.href = '/Relatório de Evento - CORRIDA TIRADENTES.pdf';
-                        link.download = 'Relatório de Evento - CORRIDA TIRADENTES.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+                        URL.revokeObjectURL(link.href);
+                        toast.success("Download iniciado!");
+                      } catch (error) {
+                        console.error('Erro ao baixar PDF:', error);
+                        toast.error("Erro ao baixar o arquivo. Tente novamente.");
                       }
                     }}
                   >Baixar</Button>

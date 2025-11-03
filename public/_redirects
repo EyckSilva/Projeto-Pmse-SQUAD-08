@@ -1,0 +1,6 @@
+# Serve static files correctly
+/relatorio-forro-caju.pdf /relatorio-forro-caju.pdf 200
+/relatorio-corrida-tiradentes.pdf /relatorio-corrida-tiradentes.pdf 200
+
+# SPA fallback
+/* /index.html 200
