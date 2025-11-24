@@ -120,24 +120,24 @@ export const EventsStore = {
     }
   },
   
-  addParticipant: (eventId: string | number, participant: string) => {
+  addParticipant: (eventId: string | number, participant: any) => {
     const event = eventsStore.find(e => e.id === Number(eventId));
-    if (event && participant.trim()) {
-      event.participants.push(participant.trim());
+    if (event) {
+      event.participants.push(participant);
     }
   },
   
-  addMaterial: (eventId: string | number, material: string) => {
+  addMaterial: (eventId: string | number, material: any) => {
     const event = eventsStore.find(e => e.id === Number(eventId));
-    if (event && material.trim()) {
-      event.materials.push(material.trim());
+    if (event) {
+      event.materials.push(material);
     }
   },
   
   addRecommendation: (eventId: string | number, recommendation: string) => {
     const event = eventsStore.find(e => e.id === Number(eventId));
-    if (event && recommendation.trim()) {
-      event.recommendations.push(recommendation.trim());
+    if (event) {
+      event.recommendations.push(recommendation);
     }
   },
   

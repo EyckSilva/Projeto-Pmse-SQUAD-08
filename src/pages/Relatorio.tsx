@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,257 +6,260 @@ import { EventsStore } from "@/lib/eventsStore";
 import { toast } from "sonner";
 import logoLarge from "@/assets/logo-pmse-large.png";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { FaTrash } from "react-icons/fa";
-import { IoReturnUpBackOutline } from "react-icons/io5";
+import { Label } from "@/components/ui/label";
+import brasaoPmse from "@/assets/brasao-pmse.png";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
-// Função auxiliar para obter URLs dos PDFs
-const getPdfInfo = (reportId: number) => {
-  const baseUrl = window.location.origin;
-  
-  switch (reportId) {
-    case 1:
-      return {
-        url: `${baseUrl}/relatorio-forro-caju.pdf`,
-        fileName: 'Relatório de Op. - Forró Caju.pdf',
-        fallbackUrl: `/relatorio-forro-caju.pdf`
-      };
-    case 2:
-      return {
-        url: `${baseUrl}/relatorio-corrida-tiradentes.pdf`,
-        fileName: 'Relatório de Evento – CORRIDA TIRADENTES.pdf',
-        fallbackUrl: `/relatorio-corrida-tiradentes.pdf`
-      };
-    default:
-      return null;
-  }
+// Interface para eventos
+interface Event {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  image: string;
+  status: string;
+  participants: any[];
+  materials: any[];
+  recommendations: any[];
+}
+
+// Função para converter data dd/mm/yyyy para objeto Date
+const parseDate = (dateStr: string): Date => {
+  const [day, month, year] = dateStr.split('/').map(Number);
+  return new Date(year, month - 1, day);
 };
 
-// Função para verificar se um arquivo existe
-const checkFileExists = async (url: string): Promise<boolean> => {
-  try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
-  } catch {
-    return false;
-  }
+// Função para formatar data para dd/mm/yyyy
+const formatDate = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 const Relatorio = () => {
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-      title: "Relatório de Operação - Forró Caju",
-      date: "15/06/2026",
-      responsible: "Cap. Silva",
-      status: "aprovado",
-      showStatusMenu: false
-    },
-    {
-      id: 2,
-      title: "Relatório de Evento - Corrida Tiradentes",
-      date: "21/04/2025",
-      responsible: "Ten. Souza",
-      status: "pendente",
-      showStatusMenu: false
-    }
-  ]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newReport, setNewReport] = useState({
-    title: "",
-    date: "",
-    responsible: "",
-    status: "pendente"
-  });
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  const handleCreateReport = () => {
-    setReports([...reports, { ...newReport, id: Date.now(), showStatusMenu: false }]);
-    setIsDialogOpen(false);
-    setNewReport({ title: "", date: "", responsible: "", status: "pendente" });
-    toast.success("Relatório criado com sucesso!");
+  // Buscar eventos do store
+  const allEvents = EventsStore.getAll ? EventsStore.getAll() : [];
+
+  const handleGenerateReport = async () => {
+    // SEMPRE pega todos os eventos
+    let filtered = [...allEvents];
+    let periodText = "Todos os Eventos Registrados";
+    
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      periodText = `${formatDate(start)} a ${formatDate(end)}`;
+    }
+
+    // Ordenar eventos por data
+    filtered.sort((a: Event, b: Event) => {
+      return parseDate(a.date).getTime() - parseDate(b.date).getTime();
+    });
+
+    if (filtered.length === 0) {
+      toast.info("Nenhum evento cadastrado no sistema.");
+      return;
+    }
+
+    // Gerar PDF diretamente
+    toast.loading("Gerando Diário Oficial...");
+    
+    try {
+      await generateOfficialDiaryPDF(filtered, periodText);
+      toast.success("Diário Oficial gerado com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao gerar o relatório!");
+      console.error(error);
+    }
+  };
+
+  const generateOfficialDiaryPDF = async (events: Event[], periodText: string) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yPosition = 20;
+
+    // Carregar e adicionar brasão
+    const img = new Image();
+    img.src = brasaoPmse;
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+
+    // Adicionar brasão centralizado (proporção correta - mais quadrado)
+    doc.addImage(img, 'PNG', pageWidth / 2 - 18, yPosition, 36, 36);
+    yPosition += 43;
+
+    // Cabeçalho oficial
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("POLÍCIA MILITAR DO ESTADO DE SERGIPE", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 8;
+
+    doc.setFontSize(14);
+    doc.text("DIÁRIO OFICIAL DE EVENTOS", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 10;
+
+    // Período do relatório
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Período: ${periodText}`, pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 5;
+
+    // Data de publicação
+    doc.setFont("helvetica", "italic");
+    const publicationDate = getTodayDate();
+    doc.text(`Publicado em: ${publicationDate}`, pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 10;
+
+    // Linha separadora
+    doc.setDrawColor(0, 51, 102);
+    doc.setLineWidth(0.5);
+    doc.line(20, yPosition, pageWidth - 20, yPosition);
+    yPosition += 10;
+
+    // Adicionar cada evento
+    events.forEach((event, index) => {
+      // Verificar se precisa de nova página
+      if (yPosition > pageHeight - 60) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Número do evento
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 51, 102);
+      doc.text(`EVENTO #${index + 1}`, 20, yPosition);
+      yPosition += 8;
+
+      // Título do evento
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.text(event.title.toUpperCase(), 20, yPosition);
+      yPosition += 8;
+
+      // Status
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      const statusColor = event.status === "Aprovado" ? [34, 197, 94] : 
+                         event.status === "Pendente" ? [234, 179, 8] : [239, 68, 68];
+      doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+      doc.text(`Status: ${event.status}`, 20, yPosition);
+      yPosition += 6;
+
+      // Informações do evento
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Data: ${event.date}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`Local: ${event.location}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`Participantes: ${event.participants.length} efetivo(s)`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`Materiais: ${event.materials.length} item(ns)`, 20, yPosition);
+      yPosition += 5;
+
+      // Espaço entre eventos
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.2);
+      doc.line(20, yPosition, pageWidth - 20, yPosition);
+      yPosition += 8;
+    });
+
+    // Rodapé final
+    if (yPosition > pageHeight - 40) {
+      doc.addPage();
+      yPosition = 20;
+    }
+
+    yPosition = pageHeight - 30;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(100, 100, 100);
+    doc.text("_________________________________________", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 5;
+    doc.text("Assinatura do Responsável", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 8;
+    doc.setFont("helvetica", "normal");
+    doc.text(`Documento gerado em ${publicationDate}`, pageWidth / 2, yPosition, { align: "center" });
+
+    // Salvar PDF
+    const fileName = `Diario_Oficial_PMSE_${getTodayDate().replace(/\//g, '-')}.pdf`;
+    doc.save(fileName);
+  };
+
+  const getTodayDate = () => {
+    const today = new Date();
+    return formatDate(today);
   };
 
   return (
     <div className="min-h-screen pb-12">
       <Header />
       <main className="container mx-auto px-4 pt-24 sm:pt-28">
-        <div className="flex justify-center mb-6 sm:mb-8">
+        {/* Seção de seleção de período - Sempre visível */}
+        <div className="max-w-4xl mx-auto mb-8">
+          <div className="flex justify-center mb-6">
             <img src={logoLarge} alt="PMSE" className="h-24 sm:h-32" />
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-foreground mb-6 sm:mb-8 px-4">
-            Relatórios Operacionais
+          
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-foreground mt-10 mb-14">
+            Diário Oficial de Eventos
           </h1>
-          <div className="max-w-5xl mx-auto mb-6 sm:mb-8 flex flex-col sm:flex-row gap-4">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-accent/30 border border-border text-white font-semibold px-4 py-2 rounded h-12 text-sm sm:text-base">+ Gerar Relatório</Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md mx-4">
-                <DialogHeader>
-                  <DialogTitle className="text-lg sm:text-xl">Gerar Novo Relatório</DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col gap-4 mt-4">
-                  <Input
-                    placeholder="Título do Relatório"
-                    value={newReport.title}
-                    onChange={e => setNewReport({ ...newReport, title: e.target.value })}
-                    className="text-sm sm:text-base"
-                  />
-                  <Input
-                    placeholder="Data"
-                    type="date"
-                    value={newReport.date}
-                    onChange={e => setNewReport({ ...newReport, date: e.target.value })}
-                    className="text-sm sm:text-base"
-                  />
-                  <Input
-                    placeholder="Responsável"
-                    value={newReport.responsible}
-                    onChange={e => setNewReport({ ...newReport, responsible: e.target.value })}
-                    className="text-sm sm:text-base"
-                  />
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button className="bg-primary text-white text-sm sm:text-base" onClick={handleCreateReport}>Criar</Button>
-                    <Button variant="outline" className="text-sm sm:text-base" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Input
-              placeholder="Buscar Relatório"
-              className="bg-accent/30 border-border text-white placeholder:text-muted-foreground h-12 px-4 rounded w-full"
-            />
-          </div>
-          <p className="text-center text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base px-4">
-            Selecione um relatório para visualizar ou clique em Gerar Relatório para cadastrar um novo.
-          </p>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
-            {reports.map(report => (
-              <div key={report.id} className="bg-card rounded-2xl p-4 sm:p-6 lg:p-8 shadow mb-4 flex flex-col gap-4 relative">
-                <button
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 text-lg sm:text-xl"
-                  style={{ color: '#041F3A' }}
-                  title="Remover relatório"
-                  onClick={() => {
-                    setReports(reports.filter(r => r.id !== report.id));
-                    toast.success("Relatório removido!");
-                  }}
-                >
-                  <FaTrash size={16} className="sm:w-[18px] sm:h-[18px]" />
-                </button>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
-                  <h2 className="text-lg sm:text-xl font-bold text-card-foreground pr-8 sm:pr-0">{report.title}</h2>
-                  <div className="relative flex items-center gap-2">
-                    <Badge className={report.status === "aprovado" ? "bg-green-600 text-white" : "bg-yellow-600 text-white"}>
-                      <span className={report.status === "aprovado" ? "text-white" : "text-white"}>
-                        {report.status === "aprovado" ? "Aprovado" : "Pendente"}
-                      </span>
-                    </Badge>
-                    <button
-                      className="ml-2 text-card-foreground hover:text-primary focus:outline-none"
-                      onClick={() => setReports(reports.map(r => r.id === report.id ? { ...r, showStatusMenu: !r.showStatusMenu } : { ...r, showStatusMenu: false }))}
-                      title="Alterar status"
-                    >
-                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M5.25 7.5L10 12.25L14.75 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </button>
-                    {report.showStatusMenu && (
-                      <div className="absolute right-0 top-8 bg-white border border-[#041F3A] rounded shadow z-10 min-w-[80px] p-0 flex flex-col items-center">
-                        {report.status === "aprovado" ? (
-                          <button
-                            className="w-full px-2 py-1 text-left text-yellow-600 font-semibold text-sm hover:bg-muted/30 rounded"
-                            onClick={() => {
-                              setReports(reports.map(r => r.id === report.id ? { ...r, status: "pendente", showStatusMenu: false } : r));
-                              toast.success("Relatório marcado como pendente!");
-                            }}
-                          >Pendente</button>
-                        ) : (
-                          <button
-                            className="w-full px-2 py-1 text-left text-green-600 font-semibold text-sm hover:bg-muted/30 rounded"
-                            onClick={() => {
-                              setReports(reports.map(r => r.id === report.id ? { ...r, status: "aprovado", showStatusMenu: false } : r));
-                              toast.success("Relatório marcado como aprovado!");
-                            }}
-                          >Aprovado</button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="text-xs sm:text-sm text-card-foreground/80 mb-2">Data: {report.date}</div>
-                <div className="text-xs sm:text-sm text-card-foreground/80 mb-4">Responsável: {report.responsible}</div>
-                {/* Status dropdown substitui os botões Aprovar/Pendente */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <Button
-                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded text-sm sm:text-base h-10 sm:h-auto"
-                    onClick={async () => {
-                      try {
-                        const pdfInfo = getPdfInfo(report.id);
-                        if (!pdfInfo) {
-                          toast.error("Arquivo não disponível!");
-                          return;
-                        }
+          
+          
 
-                        // Tenta a URL principal primeiro
-                        let urlToUse = pdfInfo.url;
-                        const fileExists = await checkFileExists(pdfInfo.url);
-                        
-                        if (!fileExists) {
-                          // Se não encontrou, tenta a URL de fallback
-                          urlToUse = pdfInfo.fallbackUrl;
-                        }
-
-                        window.open(urlToUse, '_blank');
-                      } catch (error) {
-                        console.error('Erro ao abrir PDF:', error);
-                        toast.error("Erro ao abrir o arquivo!");
-                      }
-                    }}
-                  >Visualizar</Button>
-                  <Button
-                    className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold rounded text-sm sm:text-base h-10 sm:h-auto"
-                    onClick={async () => {
-                      try {
-                        const pdfInfo = getPdfInfo(report.id);
-                        if (!pdfInfo) {
-                          toast.error("Arquivo não disponível!");
-                          return;
-                        }
-
-                        // Tenta a URL principal primeiro
-                        let urlToUse = pdfInfo.url;
-                        const fileExists = await checkFileExists(pdfInfo.url);
-                        
-                        if (!fileExists) {
-                          // Se não encontrou, tenta a URL de fallback
-                          urlToUse = pdfInfo.fallbackUrl;
-                        }
-
-                        const response = await fetch(urlToUse);
-                        if (!response.ok) {
-                          throw new Error('Arquivo não encontrado');
-                        }
-
-                        const blob = await response.blob();
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = pdfInfo.fileName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(link.href);
-                        toast.success("Download iniciado!");
-                      } catch (error) {
-                        console.error('Erro ao baixar PDF:', error);
-                        toast.error("Erro ao baixar o arquivo. Tente novamente.");
-                      }
-                    }}
-                  >Baixar</Button>
-                </div>
+          {/* Formulário de seleção de data */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border-2 border-primary/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="space-y-2">
+                <Label htmlFor="startDate" className="text-primary font-semibold text-base">
+                  Data Inicial
+                </Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="bg-gray-100 border-2 border-gray-300 focus:border-primary h-12 text-base text-black"
+                />
               </div>
-            ))}
-            <div className="bg-muted/30 rounded-2xl p-6 sm:p-8 flex items-center justify-center text-muted-foreground text-base sm:text-lg italic min-h-[160px] sm:min-h-[180px]">
-              Nenhum outro relatório cadastrado.
+              
+              <div className="space-y-2">
+                <Label htmlFor="endDate" className="text-primary font-semibold text-base">
+                  Data Final
+                </Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="bg-gray-100 border-2 border-gray-300 focus:border-primary h-12 text-base text-black"
+                />
+              </div>
             </div>
+
+            <Button
+              onClick={handleGenerateReport}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 text-base"
+            >
+              Gerar Relatório Oficial
+            </Button>
+          </div>
+        </div>
+
+        {/* Card de informação */}
+        <div className="max-w-4xl mx-auto mt-8">
+          <div className="bg-muted/30 rounded-2xl p-6 sm:p-8 border-2 border-primary/20">
+            <p className="text-muted-foreground text-sm sm:text-base text-center">
+              Selecione o período desejado nos campos acima e clique em <span className="font-semibold text-green-400">"Gerar Relatório Oficial"</span> para criar o Diário Oficial de Eventos em formato PDF com todos os eventos registrados no sistema.
+            </p>
+          </div>
         </div>
       </main>
     </div>

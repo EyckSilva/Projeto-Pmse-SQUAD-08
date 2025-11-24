@@ -1,100 +1,68 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FaTrash } from "react-icons/fa";
+import { Input } from "@/components/ui/input";
 import { EventsStore } from "@/lib/eventsStore";
-import { toast } from "sonner";
-import corridat from "@/assets/corridat.jpeg";
-import desfile from "@/assets/desfile.avif";
-import natalsolidario from "@/assets/natalsolidario.jpg";
-import diadosoldado from "@/assets/diadosoldado.jpg";
-import festejooperacao from "@/assets/festejooperacao.jpg";
-import maioamarelo from "@/assets/maioamarelo.png";
 import { IoReturnUpBackOutline } from "react-icons/io5";
-
-const mockEventDetails: Record<string, any> = {
-  "1": {
-    title: "Corrida Tiradentes",
-    date: "21/04/2025",
-    location: "Aracaju, Orla da Atalaia",
-    image: corridat
-  },
-  "2": {
-    title: "Desfile Cívico",
-    date: "07/09/2025",
-    location: "Avenida Barão de Maruim, Aracaju",
-    image: desfile
-  },
-  "3": {
-    title: "Natal Solidário",
-    date: "20/12/2025",
-    location: "Comunidades de Aracaju",
-    image: natalsolidario
-  },
-  "4": {
-    title: "Dia do Soldado",
-    date: "29/08/2026",
-    location: "Quartel do Comando Geral",
-    image: diadosoldado
-  },
-  "5": {
-    title: "Operação Festejos Juninos",
-    date: "15/06/2026",
-    location: "Forró Caju",
-    image: festejooperacao
-  },
-  "6": {
-    title: "Campanha do Maio Amarelo",
-    date: "05/05/2026",
-    location: "Aracaju",
-    image: maioamarelo
-  }
-};
+import { FaTrash } from "react-icons/fa";
+import { toast } from "sonner";
 
 const EventDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [event, setEvent] = useState<any>(null);
-  const [imageError, setImageError] = useState(false);
   const [newParticipant, setNewParticipant] = useState("");
+  const [newParticipantRole, setNewParticipantRole] = useState("");
   const [newMaterial, setNewMaterial] = useState("");
+  const [newMaterialQty, setNewMaterialQty] = useState("");
   const [newRecommendation, setNewRecommendation] = useState("");
-
-  // Função para obter a imagem correta
-  const getEventImage = (eventData: any) => {
-    if (imageError) {
-      return mockEventDetails[id]?.image || natalsolidario; // fallback
-    }
-    return eventData.image || mockEventDetails[id]?.image || natalsolidario;
-  };
 
   useEffect(() => {
     if (id) {
       const eventData = EventsStore.getById(id);
-      if (eventData) {
-        setEvent(eventData);
-      } else {
-        // Fallback para eventos mock se não encontrar no store
-        const mockEvent = mockEventDetails[id];
-        if (mockEvent) {
-          setEvent(mockEvent);
-        }
-      }
+      setEvent(eventData);
     }
   }, [id]);
 
-  const handleRemoveEvent = () => {
-    if (id) {
-      EventsStore.removeEvent(id);
-      toast.success("Evento removido!");
-      navigate("/home");
+  const handleAddParticipant = () => {
+    if (newParticipant.trim() && id) {
+      const participant = {
+        name: newParticipant.trim(),
+        role: newParticipantRole.trim() || undefined
+      };
+      EventsStore.addParticipant(id, participant);
+      setEvent(EventsStore.getById(id));
+      setNewParticipant("");
+      setNewParticipantRole("");
+      toast.success("Participante adicionado!");
     }
   };
 
-  // Funções para remover itens
+  const handleAddMaterial = () => {
+    if (newMaterial.trim() && id) {
+      const material = {
+        name: newMaterial.trim(),
+        quantity: newMaterialQty ? parseInt(newMaterialQty) : undefined
+      };
+      EventsStore.addMaterial(id, material);
+      setEvent(EventsStore.getById(id));
+      setNewMaterial("");
+      setNewMaterialQty("");
+      toast.success("Material adicionado!");
+    }
+  };
+
+  const handleAddRecommendation = () => {
+    if (newRecommendation.trim() && id) {
+      EventsStore.addRecommendation(id, newRecommendation.trim());
+      setEvent(EventsStore.getById(id));
+      setNewRecommendation("");
+      toast.success("Recomendação adicionada!");
+    }
+  };
+
   const handleRemoveParticipant = (index: number) => {
     if (id) {
       EventsStore.removeParticipant(id, index);
@@ -119,190 +87,211 @@ const EventDetails = () => {
     }
   };
 
-  const handleAddParticipant = () => {
-    if (newParticipant.trim() && id) {
-      EventsStore.addParticipant(id, newParticipant);
-      setEvent(EventsStore.getById(id));
-      setNewParticipant("");
-      toast.success("Participante adicionado com sucesso!");
-    }
-  };
-
-  const handleAddMaterial = () => {
-    if (newMaterial.trim() && id) {
-      EventsStore.addMaterial(id, newMaterial);
-      setEvent(EventsStore.getById(id));
-      setNewMaterial("");
-      toast.success("Material adicionado com sucesso!");
-    }
-  };
-
-  const handleAddRecommendation = () => {
-    if (newRecommendation.trim() && id) {
-      EventsStore.addRecommendation(id, newRecommendation);
-      setEvent(EventsStore.getById(id));
-      setNewRecommendation("");
-      toast.success("Recomendação adicionada com sucesso!");
-    }
-  };
-
   if (!event) {
-    return <div className="min-h-screen flex items-center justify-center text-foreground">Evento não encontrado</div>;
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex items-center justify-center h-[80vh] text-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Evento não encontrado</h2>
+            <Button onClick={() => navigate("/home")} className="bg-primary hover:bg-primary/90">
+              Voltar para Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen pb-12">
       <Header />
-      <button
-        className="mb-4 sm:mb-6 flex items-center gap-2 text-white font-semibold px-4 py-2 rounded ml-4 mt-4 bg-transparent border-none shadow-none"
-        onClick={() => navigate(-1)}
-      >
-        <IoReturnUpBackOutline size={20} className="sm:w-[22px] sm:h-[22px]" />
-        <span className="hidden sm:inline">Voltar</span>
-      </button>
-      <main className="container mx-auto px-4 pt-20 sm:pt-24">
-        <div className="max-w-6xl mx-auto">
-          <img 
-            src={getEventImage(event)} 
-            alt={event.title}
-            className="w-full max-w-3xl mx-auto h-48 sm:h-64 lg:h-80 object-cover rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.35)] mb-6 sm:mb-8"
-            onError={() => setImageError(true)}
-            onLoad={() => setImageError(false)}
-          />
-          
-          <div className="text-center mb-8 sm:mb-12">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-2 sm:gap-4 mb-4">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-                {event.title}
-              </h1>
-              <div className="flex items-center justify-center gap-2 sm:gap-4">
-                <Badge 
-                  variant={event.status === 'aprovado' ? 'default' : 'secondary'}
-                  className={`text-xs sm:text-sm font-semibold ${
-                    event.status === 'aprovado' 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-yellow-600 text-white'
-                  }`}
-                >
-                  {event.status?.toUpperCase()}
-                </Badge>
-                <Button
-                  className="flex items-center gap-2 text-white font-semibold px-3 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm bg-transparent border-none shadow-none"
-                  onClick={handleRemoveEvent}
-                >
-                  <span className="hidden sm:inline">Remover Evento</span>
-                  <span className="sm:hidden">Remover</span>
-                  <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
-                </Button>
-              </div>
-            </div>
-            <p className="text-base sm:text-lg text-foreground/80 px-4">
-              {event.date} – {event.location}
-            </p>
+      
+      <main className="container mx-auto px-4 pt-24 sm:pt-28">
+        <Button
+          onClick={() => navigate("/home")}
+          variant="outline"
+          className="mb-6 flex items-center gap-2"
+        >
+          <IoReturnUpBackOutline size={20} />
+          Voltar
+        </Button>
+
+        <div className="max-w-5xl mx-auto">
+          {/* Imagem do Evento */}
+          <div className="mb-8">
+            <img 
+              src={event.image} 
+              alt={event.title}
+              className="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-2xl shadow-xl"
+            />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <h2 className="text-lg sm:text-xl font-bold text-card-foreground mb-4">
-                PARTICIPANTES
+          {/* Informações Principais */}
+          <div className="bg-card/95 rounded-2xl p-6 sm:p-8 shadow-xl mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <h1 className="text-3xl sm:text-4xl font-bold text-card-foreground">
+                {event.title}
+              </h1>
+              <Badge 
+                className={`text-sm font-semibold w-fit ${
+                  event.status === 'aprovado' 
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-yellow-600 text-white'
+                }`}
+              >
+                {event.status?.toUpperCase()}
+              </Badge>
+            </div>
+            
+            <div className="space-y-3 text-card-foreground/80">
+              <p className="text-lg">
+                <span className="font-semibold">Data:</span> {event.date}
+              </p>
+              <p className="text-lg">
+                <span className="font-semibold">Local:</span> {event.location}
+              </p>
+            </div>
+          </div>
+
+          {/* Grid de Informações */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Participantes */}
+            <div className="bg-card/95 rounded-2xl p-6 shadow-xl">
+              <h2 className="text-xl font-bold text-card-foreground mb-4 border-b border-border pb-2">
+                Participantes
               </h2>
               <div className="space-y-2 mb-4">
-                {event.participants?.map((participant: string, index: number) => (
-                  <div key={index} className="p-2 bg-muted rounded text-xs sm:text-sm flex items-center justify-between">
-                    <span>{participant}</span>
-                    <button
-                      className="ml-2 text-base sm:text-lg"
-                      title="Remover"
-                      onClick={() => handleRemoveParticipant(index)}
-                    >
-                      <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
-                    </button>
-                  </div>
-                ))}
+                {event.participants && event.participants.length > 0 ? (
+                  event.participants.map((participant: any, index: number) => (
+                    <div key={index} className="p-3 rounded-lg flex items-start justify-between gap-2" style={{backgroundColor: '#041F3A'}}>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-white">{participant.name || participant}</p>
+                        {participant.role && (
+                          <p className="text-xs text-gray-300">{participant.role}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleRemoveParticipant(index)}
+                        className="text-red-400 hover:text-red-300 transition-colors p-1"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">Nenhum participante cadastrado</p>
+                )}
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="space-y-2 border-t border-border/50 pt-4">
                 <Input
-                  placeholder="Adicionar participante"
+                  placeholder="Nome do participante"
                   value={newParticipant}
                   onChange={(e) => setNewParticipant(e.target.value)}
-                  className="bg-muted border-0 text-foreground text-xs sm:text-sm"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddParticipant()}
+                  className="bg-primary text-white placeholder:text-white/70"
                 />
-                <Button 
+                <Input
+                  placeholder="Função (opcional)"
+                  value={newParticipantRole}
+                  onChange={(e) => setNewParticipantRole(e.target.value)}
+                  className="bg-primary text-white placeholder:text-white/70"
+                />
+                <Button
                   onClick={handleAddParticipant}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap text-xs sm:text-sm h-9 sm:h-10"
+                  className="w-full"
+                  disabled={!newParticipant.trim()}
                 >
-                  + Adicionar
+                  Adicionar
                 </Button>
               </div>
             </div>
 
-            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <h2 className="text-lg sm:text-xl font-bold text-card-foreground mb-4">
-                MATERIAIS
+            {/* Materiais */}
+            <div className="bg-card/95 rounded-2xl p-6 shadow-xl">
+              <h2 className="text-xl font-bold text-card-foreground mb-4 border-b border-border pb-2">
+                Materiais
               </h2>
               <div className="space-y-2 mb-4">
-                {event.materials?.map((material: string, index: number) => (
-                  <div key={index} className="p-2 bg-muted rounded text-xs sm:text-sm flex items-center justify-between">
-                    <span>{material}</span>
-                    <button
-                      className="ml-2 text-base sm:text-lg"
-                      title="Remover"
-                      onClick={() => handleRemoveMaterial(index)}
-                    >
-                      <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
-                    </button>
-                  </div>
-                ))}
+                {event.materials && event.materials.length > 0 ? (
+                  event.materials.map((material: any, index: number) => (
+                    <div key={index} className="p-3 rounded-lg flex items-start justify-between gap-2" style={{backgroundColor: '#041F3A'}}>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-white">{material.name || material}</p>
+                        {material.quantity && (
+                          <p className="text-xs text-gray-300">Qtd: {material.quantity}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleRemoveMaterial(index)}
+                        className="text-red-400 hover:text-red-300 transition-colors p-1"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">Nenhum material cadastrado</p>
+                )}
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="space-y-2 border-t border-border/50 pt-4">
                 <Input
-                  placeholder="Adicionar material"
+                  placeholder="Nome do material"
                   value={newMaterial}
                   onChange={(e) => setNewMaterial(e.target.value)}
-                  className="bg-muted border-0 text-foreground text-xs sm:text-sm"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddMaterial()}
+                  className="bg-primary text-white placeholder:text-white/70"
                 />
-                <Button 
+                <Input
+                  placeholder="Quantidade (opcional)"
+                  type="number"
+                  value={newMaterialQty}
+                  onChange={(e) => setNewMaterialQty(e.target.value)}
+                  className="bg-primary text-white placeholder:text-white/70"
+                />
+                <Button
                   onClick={handleAddMaterial}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap text-xs sm:text-sm h-9 sm:h-10"
+                  className="w-full"
+                  disabled={!newMaterial.trim()}
                 >
-                  + Adicionar
+                  Adicionar
                 </Button>
               </div>
             </div>
 
-            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <h2 className="text-lg sm:text-xl font-bold text-card-foreground mb-4">
-                RECOMENDAÇÕES
+            {/* Recomendações */}
+            <div className="bg-card/95 rounded-2xl p-6 shadow-xl">
+              <h2 className="text-xl font-bold text-card-foreground mb-4 border-b border-border pb-2">
+                Recomendações
               </h2>
               <div className="space-y-2 mb-4">
-                {event.recommendations?.map((recommendation: string, index: number) => (
-                  <div key={index} className="p-2 bg-muted rounded text-xs sm:text-sm flex items-center justify-between">
-                    <span>{recommendation}</span>
-                    <button
-                      className="ml-2 text-base sm:text-lg"
-                      title="Remover"
-                      onClick={() => handleRemoveRecommendation(index)}
-                    >
-                      <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" color="#fff" />
-                    </button>
-                  </div>
-                ))}
+                {event.recommendations && event.recommendations.length > 0 ? (
+                  event.recommendations.map((recommendation: string, index: number) => (
+                    <div key={index} className="p-3 rounded-lg flex items-start justify-between gap-2" style={{backgroundColor: '#041F3A'}}>
+                      <p className="text-sm flex-1 text-white">{recommendation}</p>
+                      <button
+                        onClick={() => handleRemoveRecommendation(index)}
+                        className="text-red-400 hover:text-red-300 transition-colors p-1"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">Nenhuma recomendação cadastrada</p>
+                )}
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="space-y-2 border-t border-border/50 pt-4">
                 <Input
-                  placeholder="Adicionar recomendação"
+                  placeholder="Nova recomendação"
                   value={newRecommendation}
                   onChange={(e) => setNewRecommendation(e.target.value)}
-                  className="bg-muted border-0 text-foreground text-xs sm:text-sm"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddRecommendation()}
+                  className="bg-primary text-white placeholder:text-white/70"
                 />
-                <Button 
+                <Button
                   onClick={handleAddRecommendation}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold whitespace-nowrap text-xs sm:text-sm h-9 sm:h-10"
+                  className="w-full"
+                  disabled={!newRecommendation.trim()}
                 >
-                  + Adicionar
+                  Adicionar
                 </Button>
               </div>
             </div>

@@ -27,20 +27,20 @@ const Contato = () => {
   return (
     <div className="min-h-screen pb-12">
       <Header />
-      <main className="container mx-auto px-4 pt-28">
-        <h1 className="text-3xl font-bold text-center text-foreground mb-12 tracking-wide">
+      <main className="container mx-auto px-4 pt-24 sm:pt-28">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-white mb-8 sm:mb-12 tracking-wide">
           FALE CONOSCO
         </h1>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          <div className="bg-card/95 rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-            <h2 className="text-2xl font-bold text-card-foreground mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          <div className="bg-gray-200 rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-6">
               Envie uma Mensagem
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-card-foreground">
+                <Label htmlFor="name" className="text-primary font-semibold">
                   Nome Completo
                 </Label>
                 <Input
@@ -48,12 +48,12 @@ const Contato = () => {
                   placeholder="Nome Completo"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="bg-muted/20 border-input text-card-foreground"
+                  className="bg-gray-100 border-2 border-gray-300 focus:border-primary text-gray-800 placeholder:text-gray-400 rounded-lg h-11"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-card-foreground">
+                <Label htmlFor="email" className="text-primary font-semibold">
                   E-mail
                 </Label>
                 <Input
@@ -62,12 +62,12 @@ const Contato = () => {
                   placeholder="Email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="bg-muted/20 border-input text-card-foreground"
+                  className="bg-gray-100 border-2 border-gray-300 focus:border-primary text-gray-800 placeholder:text-gray-400 rounded-lg h-11"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="subject" className="text-card-foreground">
+                <Label htmlFor="subject" className="text-primary font-semibold">
                   Assunto
                 </Label>
                 <Input
@@ -75,12 +75,12 @@ const Contato = () => {
                   placeholder="Assunto"
                   value={formData.subject}
                   onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  className="bg-muted/20 border-input text-card-foreground"
+                  className="bg-gray-100 border-2 border-gray-300 focus:border-primary text-gray-800 placeholder:text-gray-400 rounded-lg h-11"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="message" className="text-card-foreground">
+                <Label htmlFor="message" className="text-primary font-semibold">
                   Mensagem
                 </Label>
                 <Textarea
@@ -88,49 +88,49 @@ const Contato = () => {
                   placeholder="Mensagem"
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  className="bg-muted/20 border-input text-card-foreground min-h-[120px]"
+                  className="bg-gray-100 border-2 border-gray-300 focus:border-primary text-gray-800 placeholder:text-gray-400 rounded-lg min-h-[120px] resize-none"
                 />
               </div>
               
               <Button 
                 type="submit"
-                className="w-full bg-muted hover:bg-muted/90 text-foreground font-semibold"
+                className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-11 rounded-lg transition-colors"
               >
                 Enviar Mensagem
               </Button>
             </form>
           </div>
           
-          <div className="bg-card/95 rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+          <div className="bg-gray-200  rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
             <div className="flex items-start gap-3 mb-6">
-              <img src={logoSmall} alt="PMSE" className="h-12 w-12" />
+              <img src={logoSmall} alt="PMSE" className="h-10 w-10 sm:h-12 sm:w-12" />
               <div>
-                <h2 className="text-2xl font-bold text-card-foreground mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-4">
                   Informações para Contato
                 </h2>
               </div>
             </div>
             
-            <div className="space-y-4 text-card-foreground">
+            <div className="space-y-4 text-gray-800">
               <div>
-                <p className="font-semibold mb-1">Endereço:</p>
-                <p className="text-sm text-card-foreground/80">
+                <p className="font-bold mb-1 text-primary">Endereço:</p>
+                <p className="text-sm text-gray-700">
                   Avenida João Ribeiro, 1144, Bloco A<br />
                   Bairro Industrial Aracaju - SE - 49065-000
                 </p>
               </div>
               
               <div>
-                <p className="font-semibold mb-1">Telefones:</p>
-                <p className="text-sm text-card-foreground/80">
+                <p className="font-bold mb-1 text-primary">Telefones:</p>
+                <p className="text-sm text-gray-700">
                   QCG<br />
                   (79) 3226-7100
                 </p>
               </div>
               
               <div>
-                <p className="font-semibold mb-1">E-mail:</p>
-                <p className="text-sm text-card-foreground/80">
+                <p className="font-bold mb-1 text-primary">E-mail:</p>
+                <p className="text-sm text-gray-700">
                   gab.cmt@pm.se.gov.br<br />
                   pm5@pm.se.gov.br
                 </p>
