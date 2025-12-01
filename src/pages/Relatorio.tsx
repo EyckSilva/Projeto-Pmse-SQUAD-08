@@ -46,34 +46,18 @@ const Relatorio = () => {
   const allEvents = EventsStore.getAll ? EventsStore.getAll() : [];
 
   const handleGenerateReport = async () => {
-    // SEMPRE pega todos os eventos
-    let filtered = [...allEvents];
-    let periodText = "Todos os Eventos Registrados";
-    
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      periodText = `${formatDate(start)} a ${formatDate(end)}`;
-    }
-
-    // Ordenar eventos por data
-    filtered.sort((a: Event, b: Event) => {
-      return parseDate(a.date).getTime() - parseDate(b.date).getTime();
-    });
-
-    if (filtered.length === 0) {
-      toast.info("Nenhum evento cadastrado no sistema.");
-      return;
-    }
-
-    // Gerar PDF diretamente
-    toast.loading("Gerando Diário Oficial...");
-    
     try {
-      await generateOfficialDiaryPDF(filtered, periodText);
-      toast.success("Diário Oficial gerado com sucesso!");
+      // Baixar o PDF da pasta public
+      const link = document.createElement('a');
+      link.href = '/Diario Oficial.pdf';
+      link.download = 'Diario Oficial.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Diário Oficial baixado com sucesso!");
     } catch (error) {
-      toast.error("Erro ao gerar o relatório!");
+      toast.error("Erro ao baixar o relatório!");
       console.error(error);
     }
   };
@@ -189,8 +173,7 @@ const Relatorio = () => {
     doc.text(`Documento gerado em ${publicationDate}`, pageWidth / 2, yPosition, { align: "center" });
 
     // Salvar PDF
-    const fileName = `Diario_Oficial_PMSE_${getTodayDate().replace(/\//g, '-')}.pdf`;
-    doc.save(fileName);
+    doc.save("Diario Oficial.pdf");
   };
 
   const getTodayDate = () => {
