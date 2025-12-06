@@ -1,6 +1,4 @@
-# PMSE Hub Connect
-
-## 1.3 - Passo a Passo para execução do MVP
+Passo a Passo para execução 
 
 ### Pré-requisitos
 - Node.js 18+ ou Bun instalado
